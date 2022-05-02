@@ -14,6 +14,7 @@ CONSONANTS = 'BCDFGHJKLMNPQRSTVWXYZ'
 HAND_SIZE = 7
 WORDLIST_FILENAME = "words.txt"
 players = []
+winner = False
 
 
 class Player:
@@ -37,23 +38,45 @@ class Player:
         '''
         First player to reach a score of 100 wins
         This method checks the score'''
-        if self.score >= 100:
+        if self.score >= 50:
             self.win = True
         else:
             self.win = False
+        return self.win
 
 
-    def add_score(self):
+    def play_hand(self):
         '''
-        * Prints hand to the user
+            Allows the user to play the given hand, as follows:
+
+        * The hand is displayed.
+        
+        * The user may input a word.
 
         * Runs the check_answer function (Boolean)
+
+        * An invalid word is rejected, and a message is displayed asking
+        the user to choose another word.
+
+        * When a valid word is entered, calculate the score and display the score
+
+        hand: dictionary (string -> int)
+        word_list: list of lowercase strings
 
         * There is an option for deduction in case 
           there are no words in the hand, or if the 
           hand is difficult to solve
           
-        * Prints new score on the screen'''
+        * Prints new score on the screen
+        '''
+
+        print('\n\n\n\n\n===============================')
+        print(f'Player: {self.name}')
+        print(f'SCORE: {self.score}')
+        print('===============================\n\n\n')
+
+        time.sleep(2)
+
         print_hand(self.hand)
         tally = 0
         if check_answer(self, self.hand, word_list, 1) == True:
@@ -178,11 +201,7 @@ def print_hand(hand):
 
 def check_answer(player, hand, word_list, counter):
     '''
-    1) Checks for cheating by ensuring all characters exist in the player's hand
-    
-    2) Check the word list for validity
-    
-    3) Returns boolean for add score function
+    * Checks for cheating by ensuring all characters exist in the player's hand
     '''
     
     # Checks if word is in the player's hand
@@ -201,7 +220,10 @@ def check_answer(player, hand, word_list, counter):
                 break
         
 
-    # Checks if word exists in word_list
+    '''
+    * Check the word list for validity 
+    
+    * Returns boolean for use in the Player class .play_hand method'''
     counter = counter
 
     if answer.lower() in word_list:
@@ -209,6 +231,7 @@ def check_answer(player, hand, word_list, counter):
     else:
         if counter > 3:
             print('\n\n\n\n\nYou had too many attempts. 5 points will be deducted from your score.')
+            time.sleep(2)
             return False
         else: 
             counter += 1
@@ -255,26 +278,42 @@ def play_hand(player, word_list):
     time.sleep(2)
     
     #Ask user to make a hand, then check hand and word list
-    player.add_score()
+    player.play_hand()
 
-
-
-
-
-if __name__ == '__main__':
-
-
-    word_list = load_words()
+def play_game(winner, players):
+    '''
+    Prints a series of text to briefly explain the rules
     
+    While loop plays through each instance of Player, until
+    a player has reached a score of 50.'''
 
+    print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n===============================')
+    print('WELCOME TO TYLER\'S WORDGAME')
+    print('===============================\n\n\n')
+    input('Press Enter')
+
+    print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThis is a 1 - 4 Player Game')
+    print('\nThe game ends once a player reaches a score of 50')
+    input('\n\n\nPress Enter')
+
+    print('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nEach player will be dealt 3 Vowels and 4 Consonants.')
+    print('\nMake the best word you can to get the highest score')
+    print('\nVowels are worth 3 points and Consonants are worth 2 points')
+    input('\n\nPress Enter when you are ready to play')
 
     make_players()
 
-    for player in players:
-        play_hand(player, word_list)
-        if player.check_win() == True:
-            print(f'\n\n\n\n\n{player.name} WINS!!!!!\n\n\n').upper()
-            time.sleep(3)
-            break
-   
-    
+    while winner == False:
+        for player in players:
+            player.play_hand()
+            winner = player.check_win()
+            if winner == True:
+                time.sleep(2)
+                print(f'{player} WINS!!!\n\n\n')
+                break
+            
+
+if __name__ == '__main__':
+    word_list = load_words()
+    play_game(winner, players)
+            
